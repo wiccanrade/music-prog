@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Meditation Music Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        .qr-code {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .qr-code img {
+            max-width: 200px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+        h1 {
+            color: #2c5282;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        select, input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            background-color: white;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #2c5282;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #2a4365;
+        }
+        .share-button {
+            background-color: #38a169;
+        }
+        .share-button:hover {
+            background-color: #2f855a;
+        }
+        pre {
+            white-space: pre-wrap;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧘‍♀️ Meditasyon Müzik Üreteci 🎵</h1>
+        
+        <div class="form-group">
+            <label for="genre">Müzik Türü:</label>
+            <select id="genre" class="form-control">
+                <option value="">Tür seçin</option>
+                <option value="meditation">Meditasyon</option>
+                <option value="ambient">Ambient</option>
+                <option value="nature">Doğa Sesleri</option>
+                <option value="chakra">Çakra Healing</option>
+                <option value="mantra">Mantra</option>
+                <option value="binaural">Binaural Beats</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="theme">Meditasyon Teması:</label>
+            <select id="theme" class="form-control">
+                <option value="">Tema seçin</option>
+                <option value="inner-peace">İç Huzur</option>
+                <option value="healing">Şifa</option>
+                <option value="spiritual-growth">Ruhsal Gelişim</option>
+                <option value="chakra-alignment">Çakra Dengeleme</option>
+                <option value="mindfulness">Bilinçli Farkındalık</option>
+                <option value="energy-cleansing">Enerji Temizliği</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="mood">Enerji Seviyesi:</label>
+            <select id="mood" class="form-control">
+                <option value="">Enerji seviyesi seçin</option>
+                <option value="deep-relaxation">Derin Rahatlama</option>
+                <option value="gentle-flow">Nazik Akış</option>
+                <option value="balanced">Dengeli</option>
+                <option value="energizing">Enerji Yükseltici</option>
+                <option value="grounding">Topraklayıcı</option>
+                <option value="transcendental">Transandantal</option>
+            </select>
+        </div>
+
+        <button onclick="generateMusic()">✨ Meditasyon Müziği Oluştur ✨</button>
+
+        <div id="result" class="result" style="display: none;">
+            <div id="content"></div>
+            <div class="qr-code">
+                <h3>🔄 Paylaşım QR Kodu</h3>
+                <img id="qr-image" src="" style="display: none;" alt="QR Code">
+                <button onclick="generateQRCode()" class="share-button">
+                    🔗 QR Kod Oluştur
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMeditation = null;
+
+        async function generateMusic() {
+            const genre = document.getElementById('genre').value;
+            const theme = document.getElementById('theme').value;
+            const mood = document.getElementById('mood').value;
+
+            if (!genre || !theme || !mood) {
+                alert('Lütfen tüm alanları doldurun');
+                return;
+            }
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ genre, theme, mood }),
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentMeditation = data;
+                    const contentDiv = document.getElementById('content');
+                    contentDiv.innerHTML = `
+                        <h3>🎼 Oluşturulan Meditasyon Müziği</h3>
+                        <p><strong>Tür:</strong> ${data.genre}</p>
+                        <p><strong>Mantra/Sözler:</strong></p>
+                        <pre>${data.lyrics}</pre>
+                        <p><strong>Ses Rehberliği:</strong></p>
+                        <p>Ana Ses: ${data.vocals.male}</p>
+                        <p>Destekleyici Ses: ${data.vocals.female}</p>
+                    `;
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('qr-image').style.display = 'none';
+                } else {
+                    alert('Müzik oluşturulurken hata: ' + data.error);
+                }
+            } catch (error) {
+                alert('Hata: ' + error.message);
+            }
+        }
+
+        async function generateQRCode() {
+            if (!currentMeditation) {
+                alert('Önce meditasyon müziği oluşturun');
+                return;
+            }
+
+            try {
+                const response = await fetch('/qr-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        data: JSON.stringify(currentMeditation)
+                    }),
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const qrImage = document.getElementById('qr-image');
+                    qrImage.src = URL.createObjectURL(blob);
+                    qrImage.style.display = 'block';
+                } else {
+                    alert('QR kod oluşturulurken hata oluştu');
+                }
+            } catch (error) {
+                alert('Hata: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

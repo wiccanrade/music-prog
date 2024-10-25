@@ -1,0 +1,7 @@
+flask==3.0.0
+openai==1.6.1
+python-dotenv==1.0.0
+sounddevice==0.4.6
+numpy==1.26.2
+qrcode==7.4.2
+Pillow==10.1.0
